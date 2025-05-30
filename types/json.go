@@ -3,9 +3,10 @@ package types
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"math/big"
 	"strings"
+
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 func (r *ScriptType) UnmarshalJSON(input []byte) error {
@@ -860,6 +861,21 @@ func (r *TransactionWithStatus) UnmarshalJSON(input []byte) error {
 func (r *PackedBlock) UnmarshalJSON(input []byte) error {
 	if err := json.Unmarshal(input, &r.Block); err != nil {
 		return err
+	}
+	return nil
+}
+
+func (r *EntryCompleted) UnmarshalJSON(input []byte) error {
+	var result struct {
+		Cycles hexutil.Uint64 `json:"cycles"`
+		Fee    hexutil.Uint64 `json:"fee"`
+	}
+	if err := json.Unmarshal(input, &result); err != nil {
+		return err
+	}
+	*r = EntryCompleted{
+		Cycles: uint64(result.Cycles),
+		Fee:    uint64(result.Fee),
 	}
 	return nil
 }
